@@ -1,5 +1,6 @@
 
 String qbf = "The quick brown fox jumped over the lazy dog.";
+boolean showgridlines = true;
 
 void setup(){
   size(800,600);
@@ -9,6 +10,16 @@ void setup(){
 
 void draw(){
   background(200);
+  if(showgridlines){
+    stroke(190);
+    for(int x=0; x<width; x+=20){
+      line(x,0,x,height);
+    }
+    for(int y=0; y<height; y+=20){
+      line(0,y,width,y);
+    }
+    stroke(0);
+  }
   fill(100);
   box.draw();
 }
