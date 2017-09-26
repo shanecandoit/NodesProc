@@ -2,6 +2,8 @@
 String qbf = "The quick brown fox jumped over the lazy dog.";
 boolean showgridlines = true;
 
+ArrayList<Box> boxes = new ArrayList<Box>();
+
 // support dragging
 boolean dragging = false;
 long timeStill=0;
@@ -14,7 +16,8 @@ void setup(){
   //mono=loadFont("c:/windows/fonts/cour.ttf");
   mono=createFont("Courier New Bold", 12);
   textFont( mono );
-  box = new Box("Box-1",100,200,100,200,qbf);
+  //box = new Box("Box-1",100,200,100,200,qbf);
+  boxes.add( new Box("Box-1",100,200,100,200,qbf) );
 }
 
 void draw(){
@@ -31,8 +34,11 @@ void draw(){
     stroke(0);
   }
   fill(100);
-  box.draw();
-  
+  int i=0;
+  for(Box box:boxes){
+    box.draw(i);
+    i++;
+  }
   handleTime();
 }
 
@@ -50,7 +56,8 @@ void handleTime(){
 
 
 void mouseClicked() {
-  box = new Box(box.name,(int)random(100,width-200),(int)random(100,height-200),(int)random(100,400),(int)random(100,400),box.tx);
+  String newBoxName = "Box-"+(boxes.size()+1);
+  boxes.add(new Box(newBoxName,(int)random(100,width-200),(int)random(100,height-200),(int)random(100,400),(int)random(100,400),qbf));
 }
 
 void mouseDragged() {
@@ -61,8 +68,6 @@ void mouseReleased(){
   dragging=false;
 }
 
-Box box;
-
 class Box{
   final int x; int y; int w; int h;
   final String tx;
@@ -70,7 +75,7 @@ class Box{
   Box(String nm, int xx, int yy, int ww, int hh,String txt){
     name=nm;x=xx;y=yy;w=ww;h=hh;tx=txt;
   }
-  void draw(){
+  void draw(int index){
     // shadow
     fill(0);
     rect(x+10,y+10,w,h);
@@ -110,7 +115,8 @@ class Box{
     
     // move when dragging
     if(dragging){
-      println("drag box:"+box.name);
+      println("drag box:"+name);
+      Box box = boxes.get(index);
       box = new Box(box.name,mouseX-box.w/2,mouseY,box.w,box.h,box.tx);
     }
   }
