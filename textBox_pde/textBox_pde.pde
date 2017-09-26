@@ -38,12 +38,13 @@ void draw(){
 
 void handleTime(){
   if(mouseX==pmouseX && mouseY==pmouseY){
-    timeStill=millis()-timeStopLast;
+    //timeStill=millis()-timeStopLast;
   }else{
-    timeStill=0;//millis();
+    //timeStill=0;//millis();
     timeStopLast=millis();
   }
-  fill(0);
+  timeStill=millis()-timeStopLast;
+  fill(90);
   text(""+timeStill,22,height-22);
 }
 
