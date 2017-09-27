@@ -4,8 +4,9 @@ boolean showgridlines = true;
 
 ArrayList<Box> boxes = new ArrayList<Box>();
 
-long timeStill=0;
 long timeStopLast=0;
+static int mx;
+static int my;
 
 void setup() {
   size(800, 600);
@@ -19,8 +20,10 @@ void setup() {
 }
 
 void draw() {
+  mx=mouseX;
+  my=mouseY;
   background(200);
-  //cursor(ARROW);
+
   if (showgridlines) {
     stroke(190);
     for (int x=0; x<width; x+=20) {
@@ -32,22 +35,24 @@ void draw() {
     stroke(0);
   }
   fill(100);
+
   int i=0;
   for (Box box : boxes) {
     box.draw(i);
     i++;
   }
+
   handleTime();
 }
 
 void handleTime() {
   if (mouseX==pmouseX && mouseY==pmouseY) {
-    //timeStill=millis()-timeStopLast;
+    // the time since the mouse last moved
+    // to fire off background events?
   } else {
-    //timeStill=0;//millis();
     timeStopLast=millis();
   }
-  timeStill=millis()-timeStopLast;
+  long timeStill=millis()-timeStopLast;
   fill(90);
   text(""+timeStill, 22, height-22);
 }
@@ -55,7 +60,11 @@ void handleTime() {
 
 void mouseClicked() {
   String newBoxName = "Box-"+(boxes.size()+1);
-  boxes.add(new Box(newBoxName, (int)random(100, width-200), (int)random(100, height-200), (int)random(100, 400), (int)random(100, 400), qbf, false));
+  if (mouseOverBoxCount(boxes)==0) {
+    boxes.add(new Box(newBoxName, (int)random(100, width-200), (int)random(100, height-200), (int)random(100, 400), (int)random(100, 400), qbf, false));
+  } else {
+    //
+  }
 }
 
 //void mouseDragged() {
@@ -154,4 +163,14 @@ class Box {
       boxes.set(index, box);
     }
   }
+}
+
+static int mouseOverBoxCount( ArrayList<Box> boxes ) {
+  int count=0;
+  for (Box box : boxes) {
+    if ((mx > box.x && mx < box.x+box.w) && (my > box.y && my < box.y+box.h)) {
+      count++;
+    }
+  }
+  return count;
 }
