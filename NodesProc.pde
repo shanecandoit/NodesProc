@@ -5,8 +5,7 @@ boolean showgridlines = true;
 ArrayList<Box> boxes = new ArrayList<Box>();
 
 long timeStopLast=0;
-static int mx;
-static int my;
+boolean dragging;
 
 void setup() {
   size(800, 600);
@@ -20,8 +19,6 @@ void setup() {
 }
 
 void draw() {
-  mx=mouseX;
-  my=mouseY;
   background(200);
 
   if (showgridlines) {
@@ -60,20 +57,30 @@ void handleTime() {
 
 void mouseClicked() {
   String newBoxName = "Box-"+(boxes.size()+1);
-  if (mouseOverBoxCount(boxes)==0) {
+  if (mouseOverBoxCount(boxes, mouseX, mouseY)==0) {
     boxes.add(new Box(newBoxName, (int)random(100, width-200), (int)random(100, height-200), (int)random(100, 400), (int)random(100, 400), qbf, false));
   } else {
     //
   }
 }
 
-//void mouseDragged() {
-//  //dragging=true;
-//  println("drag start");
-//}
-//void mouseReleased() {
-//  //dragging=false;
-//}
+void mouseDragged() {
+  if ( !dragging ) {
+    dragging=true;
+    println("drag start");
+  }
+}
+void mouseReleased() {
+  println("mouseReleased");
+  if (dragging) {
+    dragging=false;
+    println("drag end");
+  }else{
+    // drop all boxes?
+    boxes = boxDeactivateAll( boxes );
+  }
+}
+
 
 class Box {
   final int x; 
@@ -94,8 +101,12 @@ class Box {
   }
   void draw(int index) {
 
+    if(mousePressed){
+      boxes = boxFlipActiveMouseOver(boxes,mouseX,mouseY);
+    }
+    
     // shadow
-    if (active) {
+    if (this.active) {
       fill(0);
       rect(x+10, y+10, w, h);
       fill(100);
@@ -121,16 +132,9 @@ class Box {
     text(tx, x, y+20, w, h);
 
     // banner mouse
-    boolean dragging = false;
-    if ( (mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+20) ) {
-      //cursor(MOVE);
-      if (mousePressed && (mouseButton == LEFT)) {
-        dragging=true;
-      } else {
-        dragging=false;
-      }
-    }
     if (dragging) {
+      println("supposedly dragging:"+this.name);
+      println("this.active:"+this.active);
       cursor(MOVE);
     }
     // scaler mouse
@@ -141,7 +145,8 @@ class Box {
     }
 
     // move when dragging
-    if (dragging) {
+    if (dragging && this.active) {
+      println("actually dragging:"+this.name);
       int offx = mouseX-x;
       int poffx = mouseX-pmouseX;
       int offy = mouseY-y;
@@ -163,9 +168,37 @@ class Box {
       boxes.set(index, box);
     }
   }
+
+  //ArrayList<Box> boxFlipActive( ArrayList<Box> boxes ) {
+  //  ArrayList<Box> newboxes = new ArrayList<Box>();
+  //  for (int i=0; i<boxes.size();i++) {
+  //    Box box = boxes.get(i);
+  //    Box newbox = new Box(box.name, box.x, box.y, box.w, box.h, box.tx, !box.active);
+  //    newboxes.set(i, newbox);
+  //  }
+  //  return newboxes;
+  //}
+  ArrayList<Box> boxFlipActiveMouseOver( ArrayList<Box> boxes, int mx, int my ) {
+    if( mouseOverBoxCount(boxes, mx, my)==0 ){
+      println("mouse over no boxes");
+      return boxes;
+    }
+    
+    ArrayList<Box> newboxes = new ArrayList<Box>(boxes.size());
+    for (int i=0; i<boxes.size(); i++) {
+      Box box = boxes.get(i);
+      if ( (mx > x && mx < x+w) && (my > y && my < y+h) ) {
+        box = new Box(box.name, box.x, box.y, box.w, box.h, box.tx, !box.active);
+      }
+      newboxes.add(box);
+    }
+    return newboxes;
+  }
 }
 
-static int mouseOverBoxCount( ArrayList<Box> boxes ) {
+
+
+static int mouseOverBoxCount( ArrayList<Box> boxes, int mx, int my ) {
   int count=0;
   for (Box box : boxes) {
     if ((mx > box.x && mx < box.x+box.w) && (my > box.y && my < box.y+box.h)) {
@@ -173,4 +206,23 @@ static int mouseOverBoxCount( ArrayList<Box> boxes ) {
     }
   }
   return count;
+}
+
+static ArrayList<Box> getMouseOverBoxes( ArrayList<Box> boxes, int mx, int my ) {
+  ArrayList<Box> selected = new ArrayList<Box>();
+  for (Box box : boxes) {
+    if ((mx > box.x && mx < box.x+box.w) && (my > box.y && my < box.y+box.h)) {
+      selected.add(box);
+    }
+  }
+  return selected;
+}
+
+public ArrayList<Box> boxDeactivateAll( ArrayList<Box> boxes ) {
+  for (int i=0; i<boxes.size(); i++) {
+    Box box = boxes.get(i);
+    Box newbox = new Box(box.name, box.x, box.y, box.w, box.h, box.tx, false);
+    boxes.set(i, newbox);
+  }
+  return boxes;
 }
