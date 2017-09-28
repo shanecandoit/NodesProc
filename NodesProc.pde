@@ -6,15 +6,16 @@ ArrayList<Box> boxes = new ArrayList<Box>();
 
 long timeStopLast=0;
 boolean dragging;
+boolean pmousePressed=false;
 
 void setup() {
   size(800, 600);
   frameRate(15);
   PFont mono;
-  //mono=loadFont("c:/windows/fonts/cour.ttf");
   mono=createFont("Courier New Bold", 12);
   textFont( mono );
-  //box = new Box("Box-1",100,200,100,200,qbf);
+  
+  // first box
   boxes.add( new Box("Box-1", 100, 200, 100, 200, qbf, true) );
 }
 
@@ -40,6 +41,12 @@ void draw() {
   }
 
   handleTime();
+  
+  if(mousePressed){
+    pmousePressed=true;
+  }else{
+    pmousePressed=false;
+  }
 }
 
 void handleTime() {
@@ -76,8 +83,11 @@ void mouseReleased() {
     dragging=false;
     println("drag end");
   }else{
+    println("mouseReleased !dragging");
     // drop all boxes?
-    boxes = boxDeactivateAll( boxes );
+    //boxes = boxDeactivateAll( boxes );
+    Box fake = new Box();
+    boxes = fake.boxFlipActiveMouseOver(boxes,mouseX,mouseY);
   }
 }
 
@@ -90,6 +100,7 @@ class Box {
   final String tx;
   final String name;
   final boolean active;
+  Box(){tx="";name="";x=y=w=h=0;active=false;}
   Box(String nm, int xx, int yy, int ww, int hh, String txt, boolean up) {
     name=nm;
     x=xx;
@@ -101,7 +112,8 @@ class Box {
   }
   void draw(int index) {
 
-    if(mousePressed){
+    if( mousePressed && (mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+h)){
+      
       boxes = boxFlipActiveMouseOver(boxes,mouseX,mouseY);
     }
     
