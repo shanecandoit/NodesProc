@@ -41,12 +41,6 @@ void draw() {
   }
 
   handleTime();
-  
-  if(mousePressed){
-    pmousePressed=true;
-  }else{
-    pmousePressed=false;
-  }
 }
 
 void handleTime() {
@@ -84,10 +78,7 @@ void mouseReleased() {
     println("drag end");
   }else{
     println("mouseReleased !dragging");
-    // drop all boxes?
-    //boxes = boxDeactivateAll( boxes );
-    Box fake = new Box();
-    boxes = fake.boxFlipActiveMouseOver(boxes,mouseX,mouseY);
+    // drop all boxes? no
   }
 }
 
