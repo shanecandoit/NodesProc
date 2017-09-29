@@ -121,18 +121,14 @@ class Box {
       //boxes = boxFlipActiveMouseOver(boxes,mouseX,mouseY);
       println("dropped/pickedUp box:"+index);
       if(this.active){
-        println("active, so drop");
-        
+        //println("active, so drop");
         Box thisInactive = new Box(this.name, this.x, this.y, this.w, this.h, this.tx, !this.active);
         boxes.set( index, thisInactive );
-        //return index; //??
         
       }else{
-        println("inactive, so pickUp");
-        
+        //println("inactive, so pickUp");
         Box thisInactive = new Box(this.name, this.x, this.y, this.w, this.h, this.tx, !this.active);
         boxes.set( index, thisInactive );
-        //return index;
       }
     }
     
@@ -164,58 +160,38 @@ class Box {
 
     // banner mouse
     if (dragging) {
-      println("supposedly dragging:"+this.name);
-      println("this.active:"+this.active);
       cursor(MOVE);
-    }
-    // scaler mouse
-    else if ( (mouseX > x+w-20 && mouseX < x+w) && (mouseY > y+h-20 && mouseY < y+h) ) {
+    } else if ( (mouseX > x+w-20 && mouseX < x+w) && (mouseY > y+h-20 && mouseY < y+h) ) {
+      // scaler mouse
       cursor(HAND);
     } else {
       cursor(ARROW);
     }
     
+    // TODO:
     // what is the top most moused over box?
     // only flip that one
 
-/*
-    // move when dragging
-    if (dragging && this.active) {
-      println("actually dragging:"+this.name);
-      int offx = mouseX-x;
+    // drag box
+    //println("dragging:"+dragging+" box:"+this.name+" active:"+this.active);
+    if( dragging && this.active ){
+      //&& (mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+h)){
+      //println("dragging:"+dragging+" box:"+this.name+" active:"+this.active);
       int poffx = mouseX-pmouseX;
-      int offy = mouseY-y;
       int poffy = mouseY-pmouseY;
-      if (poffx==0 && poffy==0) {
-        Box box = boxes.get(index);
-        box = new Box(box.name, box.x, box.y, box.w, box.h, box.tx, true);
-        boxes.set(index, box);
+      int newx=(this.x)+poffx;
+      int newy=(this.y)+poffy;
+      //println(" poffx:"+poffx+" poffy:"+poffy+" newx:"+newx+" newy:"+newy);
+      if (poffx!=0 && poffy!=0) {
+        Box newBox = boxes.get(index);
+        newBox = new Box(this.name, newx, newy, this.w, this.h, this.tx, this.active);
+        boxes.set(index, newBox);
         return index;
       }
-      println("drag box:"+name);
-      int newx=(x)+poffx;
-      int newy=(y)+poffy;
-      println(" mouseX:"+mouseX+" offx:"+offx+" x:"+x+" mouseY:"+mouseY+" offy:"+offy+" y:"+y);
-      println(" poffx:"+poffx+" poffy:"+poffy);
-      println(" newx:"+newx+" newy:"+newy);
-      Box box = boxes.get(index);
-      box = new Box(box.name, newx, newy, box.w, box.h, box.tx, true);
-      boxes.set(index, box);
     }
-    */
-    
     return index;
   }
 
-  //ArrayList<Box> boxFlipActive( ArrayList<Box> boxes ) {
-  //  ArrayList<Box> newboxes = new ArrayList<Box>();
-  //  for (int i=0; i<boxes.size();i++) {
-  //    Box box = boxes.get(i);
-  //    Box newbox = new Box(box.name, box.x, box.y, box.w, box.h, box.tx, !box.active);
-  //    newboxes.set(i, newbox);
-  //  }
-  //  return newboxes;
-  //}
   ArrayList<Box> boxFlipActiveMouseOver( ArrayList<Box> boxes, int mx, int my ) {
     if( mouseOverBoxCount(boxes, mx, my)==0 ){
       println("mouse over no boxes");
@@ -233,7 +209,6 @@ class Box {
     return newboxes;
   }
 }
-
 
 
 static int mouseOverBoxCount( ArrayList<Box> boxes, int mx, int my ) {
