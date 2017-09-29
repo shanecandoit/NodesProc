@@ -6,7 +6,7 @@ ArrayList<Box> boxes = new ArrayList<Box>();
 
 long timeStopLast=0;
 boolean dragging;
-boolean pmousePressed=false;
+boolean mouseFired=false; // only true the frame of mouseUp
 
 void setup() {
   size(800, 600);
@@ -40,6 +40,9 @@ void draw() {
     i++;
   }
 
+  //after boxes are drawn set mouseFired off
+  mouseFired=false;
+  
   handleTime();
 }
 
@@ -61,6 +64,7 @@ void mouseClicked() {
   //println("mouseClicked");
   if (mouseOverBoxCount(boxes, mouseX, mouseY)==0) {
     String newBoxName = "Box-"+(boxes.size()+1);
+    println("making new box:"+newBoxName);
     boxes.add(new Box(newBoxName, (int)random(100, width-200), (int)random(100, height-200), (int)random(100, 400), (int)random(100, 400), qbf, false));
   } else {
     //
@@ -83,6 +87,8 @@ void mouseReleased() {
     println("mouseReleased !dragging");
     // drop all boxes? no
   }
+  
+  mouseFired=true;
 }
 
 
@@ -95,6 +101,8 @@ class Box {
   final String name;
   final boolean active;
   Box(){tx="";name="";x=y=w=h=0;active=false;}
+  
+  //Box(this.name, this.x, this.y, this.w, this.h, this.text, this.active);
   Box(String nm, int xx, int yy, int ww, int hh, String txt, boolean up) {
     name=nm;
     x=xx;
@@ -104,12 +112,28 @@ class Box {
     tx=txt;
     active=up;
   }
-  void draw(int index) {
+  int draw(int index) {
 
-    if( mousePressed && (mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+h)){
+    //if( mousePressed && (mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+h)){
+    //println("draw("+index+") mouseFired:"+mouseFired);
+    if( mouseFired && (mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+h)){
       
-      boxes = boxFlipActiveMouseOver(boxes,mouseX,mouseY);
-      println("dropped/pickedUp something");
+      //boxes = boxFlipActiveMouseOver(boxes,mouseX,mouseY);
+      println("dropped/pickedUp box:"+index);
+      if(this.active){
+        println("active, so drop");
+        
+        Box thisInactive = new Box(this.name, this.x, this.y, this.w, this.h, this.tx, !this.active);
+        boxes.set( index, thisInactive );
+        //return index; //??
+        
+      }else{
+        println("inactive, so pickUp");
+        
+        Box thisInactive = new Box(this.name, this.x, this.y, this.w, this.h, this.tx, !this.active);
+        boxes.set( index, thisInactive );
+        //return index;
+      }
     }
     
     // shadow
@@ -150,7 +174,11 @@ class Box {
     } else {
       cursor(ARROW);
     }
+    
+    // what is the top most moused over box?
+    // only flip that one
 
+/*
     // move when dragging
     if (dragging && this.active) {
       println("actually dragging:"+this.name);
@@ -162,7 +190,7 @@ class Box {
         Box box = boxes.get(index);
         box = new Box(box.name, box.x, box.y, box.w, box.h, box.tx, true);
         boxes.set(index, box);
-        return;
+        return index;
       }
       println("drag box:"+name);
       int newx=(x)+poffx;
@@ -174,6 +202,9 @@ class Box {
       box = new Box(box.name, newx, newy, box.w, box.h, box.tx, true);
       boxes.set(index, box);
     }
+    */
+    
+    return index;
   }
 
   //ArrayList<Box> boxFlipActive( ArrayList<Box> boxes ) {
