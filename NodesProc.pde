@@ -57,8 +57,10 @@ void handleTime() {
 
 
 void mouseClicked() {
-  String newBoxName = "Box-"+(boxes.size()+1);
+  // fires after mouseReleased
+  //println("mouseClicked");
   if (mouseOverBoxCount(boxes, mouseX, mouseY)==0) {
+    String newBoxName = "Box-"+(boxes.size()+1);
     boxes.add(new Box(newBoxName, (int)random(100, width-200), (int)random(100, height-200), (int)random(100, 400), (int)random(100, 400), qbf, false));
   } else {
     //
@@ -72,7 +74,8 @@ void mouseDragged() {
   }
 }
 void mouseReleased() {
-  println("mouseReleased");
+  // fires before mouseClicked
+  //println("mouseReleased");
   if (dragging) {
     dragging=false;
     println("drag end");
@@ -106,6 +109,7 @@ class Box {
     if( mousePressed && (mouseX > x && mouseX < x+w) && (mouseY > y && mouseY < y+h)){
       
       boxes = boxFlipActiveMouseOver(boxes,mouseX,mouseY);
+      println("dropped/pickedUp something");
     }
     
     // shadow
